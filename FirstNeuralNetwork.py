@@ -1,11 +1,21 @@
 import tensorflow as tf
 import numpy as np
+import matplotlib.pyplot as plt
 '''
+1. tf中变量与placeholder的区别
 variables：用于一些可训练变量，Weights&biases，其值在训练中会改变，必须提供初始值
 placeholder：用于传递进来的真实的训练样本，不必指定初始值，
 必须用feed_dict{}的方式给sess.run喂参数
 '''
+'''
+2. matplotlib知识：
+ax.scatter(x,y) 绘制散点图
+ax.plot(x,y) 绘制曲线图
 
+matplot默认为阻塞模式
+在plt.show()后的代码不运行，直到关闭图片后
+使用plt.ion()打开交互模式，plt.show()后代码继续运行
+'''
 
 '''
 定义层的函数
@@ -36,6 +46,18 @@ xs = tf.placeholder(tf.float32,[None,1])
 ys = tf.placeholder(tf.float32,[None,1])
 
 '''
+绘制真实数据
+'''
+#定义画布
+fig =plt.figure()
+# 参数，子图总行数，子图总列数，该子图编号
+ax = fig.add_subplot(1,1,1)
+ax.scatter(x_data,y_data)
+#打开交互模式，即使遇到plt.show()代码还会继续执行
+plt.ion()
+plt.show()
+
+'''
 定义隐藏层，一个输入，10个输出，使用relu作为激励函数
 '''
 l1 = add_layers(xs,1,10,activation_function=tf.nn.relu)
@@ -54,14 +76,27 @@ loss = tf.reduce_mean(tf.reduce_sum(tf.square(ys-prediction),1))
 #定义训练步骤,以0.1的速率，梯度下降求解loss的最小值
 train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss)
 
-init = tf.initialize_all_variables()
 
 '''
 定义session
 '''
+init = tf.initialize_all_variables()
 sess = tf.Session()
 sess.run(init)
+
 
 #学习1000步 trainstep
 for i in range(1000):
     sess.run(train_step,feed_dict={xs:x_data,ys:y_data})
+    if i %50:
+        try:
+            #抹去上面一条线
+            ax.lines.remove(lines[0])
+        except Exception:
+            pass
+        # print(sess.run(loss,feed_dict={xs:x_data,ys:y_data}))
+        prediction_value = sess.run(prediction,feed_dict={xs:x_data,ys:y_data})
+        # 在原ax图片上继续绘制预测y值与x_data的红色曲线，重新绘制一条线
+        lines = ax.plot(x_data,prediction_value,'r-',lw=5)
+        #暂停0.1秒
+        plt.pause(0.1)
