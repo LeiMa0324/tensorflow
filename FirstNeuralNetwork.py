@@ -22,6 +22,7 @@ matplot默认为阻塞模式
 '''
 def add_layers(inputs,in_size,out_size,activation_function=None):
     #使用random_normal给weights赋初始值
+    #每个weight有in_size个数，out_size个weight，组成weights矩阵
     Weights = tf.Variable(tf.random_normal([in_size,out_size]))
     #使用0.1给偏置赋初始值
     biases = tf.Variable(tf.zeros([1,out_size])+0.1)

@@ -65,6 +65,7 @@ sess.run(init)
 
 #学习1000步 trainstep
 for i in range(1000):
+    #每一步进行训练
     sess.run(train_step,feed_dict={xs:x_data,ys:y_data})
     if i %50:
 
